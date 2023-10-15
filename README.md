@@ -3,15 +3,21 @@
 ## Building
 1. Make sure to clone with the --recursive flag to also clone the dependency - 
 
-	git clone --recursive https://github.com/AjayBrahmakshatriya/AjayCXX_NESEmulator.git
+```
+git clone --recursive https://github.com/AjayBrahmakshatriya/AjayCXX_NESEmulator.git
+```
 
-2. First build the dependency (inside the project repo) - 
-
-	make -C buildit 
+2. First build the dependency (inside the project repo) -
+   
+```
+make -C buildit 
+```
 
 3. Now build the project
-	
-	make 
+
+``` 
+make 
+```
 
 ## Running
 Currently, the project just generates code for the program written in the driver.cpp. 
