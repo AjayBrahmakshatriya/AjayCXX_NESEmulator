@@ -568,7 +568,6 @@ the 6510 (the C64 processor).
 
 
   CLC                       CLC Clear carry flag                        CLC
-
   Operation:  0 -> C                                    N Z C I D V
                                                         _ _ 0 _ _ _
                                 (Ref: 3.0.2)
@@ -641,7 +640,7 @@ the 6510 (the C64 processor).
   +----------------+-----------------------+---------+---------+----------+
   | Addressing Mode| Assembly Language Form| OP CODE |No. Bytes|No. Cycles|
   +----------------+-----------------------+---------+---------+----------+
-  |  Immediate     |   CPX *Oper           |    E0   |    2    |    2     |
+  |  Immediate     |   CPX #Oper           |    E0   |    2    |    2     |
   |  Zero Page     |   CPX Oper            |    E4   |    2    |    3     |
   |  Absolute      |   CPX Oper            |    EC   |    3    |    4     |
   +----------------+-----------------------+---------+---------+----------+
@@ -653,7 +652,7 @@ the 6510 (the C64 processor).
   +----------------+-----------------------+---------+---------+----------+
   | Addressing Mode| Assembly Language Form| OP CODE |No. Bytes|No. Cycles|
   +----------------+-----------------------+---------+---------+----------+
-  |  Immediate     |   CPY *Oper           |    C0   |    2    |    2     |
+  |  Immediate     |   CPY #Oper           |    C0   |    2    |    2     |
   |  Zero Page     |   CPY Oper            |    C4   |    2    |    3     |
   |  Absolute      |   CPY Oper            |    CC   |    3    |    4     |
   +----------------+-----------------------+---------+---------+----------+
@@ -1011,7 +1010,6 @@ the 6510 (the C64 processor).
 
 
   SEC                        SEC Set carry flag                         SEC
-
   Operation:  1 -> C                                    N Z C I D V
                                                         _ _ 1 _ _ _
                                 (Ref: 3.0.1)
