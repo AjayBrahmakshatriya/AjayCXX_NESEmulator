@@ -1,6 +1,10 @@
 #ifndef RUNTIME_H
 #define RUNTIME_H
 
+#ifdef __cplusplus 
+extern "C" {
+#endif
+
 typedef unsigned short nes_word;
 typedef unsigned char nes_byte;
 
@@ -16,5 +20,10 @@ extern nes_byte reg_flag_b;
 extern nes_byte reg_flag_v;
 extern nes_byte reg_flag_s;
 
+void init_regs (void);
+
+#ifdef __cplusplus 
+}
+#endif
 
 #endif
