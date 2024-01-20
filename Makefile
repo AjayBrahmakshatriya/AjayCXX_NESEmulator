@@ -15,7 +15,7 @@ $(shell mkdir -p $(BUILD_DIR)/runtime)
 EXECUTABLES=$(BUILD_DIR)/nes_compiler
 
 
-OBJS=$(BUILD_DIR)/driver.o $(BUILD_DIR)/emulator.o
+OBJS=$(BUILD_DIR)/driver.o $(BUILD_DIR)/emulator.o $(BUILD_DIR)/pipeline.o $(BUILD_DIR)/loader.o
 
 INCLUDES=$(wildcard $(INCLUDE_DIR)/*.h)
 RUNTIME_INCLUDES=$(wildcard $(RUNTIME_DIR)/*.h)

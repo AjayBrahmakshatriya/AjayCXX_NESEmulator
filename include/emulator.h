@@ -57,6 +57,10 @@ extern dnes_byte sign_flag;
 
 dnes_word emulate_code (nes_byte* main_memory, nes_word offset, dnes_byte_addr dmain_memory);
 
+namespace runtime {
+extern builder::dyn_var<void(void)> runtime_unreachable;
+}
+
 
 }
 

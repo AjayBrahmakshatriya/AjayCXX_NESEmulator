@@ -1,6 +1,8 @@
 #ifndef RUNTIME_H
 #define RUNTIME_H
 
+#include <stdio.h>
+
 #ifdef __cplusplus 
 extern "C" {
 #endif
@@ -21,6 +23,8 @@ extern nes_byte reg_flag_v;
 extern nes_byte reg_flag_s;
 
 void init_regs (void);
+
+void runtime_unreachable(const char*);
 
 #ifdef __cplusplus 
 }

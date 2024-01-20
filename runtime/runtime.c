@@ -1,4 +1,6 @@
 #include "runtime.h"
+#include <stdio.h>
+#include <stdlib.h>
 
 nes_byte reg_acc;
 nes_byte reg_x;
@@ -20,3 +22,9 @@ void init_regs (void) {
 	reg_sp = 0xfd;
 	// Rest of the registers are uinitialized
 }
+
+void runtime_unreachable(const char* msg) {
+	printf("Execution stopped with: %s\n", msg);
+	exit(-1);
+}
+

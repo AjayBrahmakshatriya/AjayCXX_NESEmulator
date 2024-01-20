@@ -1,6 +1,6 @@
+#include <iostream>
 #include "emulator.h"
 #include "instructions.h"
-#include <iostream>
 namespace nes {
 
 dnes_byte acc = builder::as_global("reg_acc");
@@ -14,6 +14,11 @@ dnes_byte decimal_flag = builder::as_global("reg_flag_d");
 dnes_byte break_flag = builder::as_global("reg_flag_b");
 dnes_byte overflow_flag = builder::as_global("reg_flag_v");
 dnes_byte sign_flag = builder::as_global("reg_flag_s");
+
+namespace runtime {
+builder::dyn_var<void(void)> runtime_unreachable = builder::as_global("runtime_unreachable");
+builder::dyn_var<void(void)> runtime_printf = builder::as_global("printf");
+}
 
 static dnes_byte load_byte (nes_context_t context, nes_byte* instruction_addr, instruction::nes_instruction_t instruction) {
 	instruction_addr += 1;
@@ -201,7 +206,9 @@ dnes_word emulate_code (nes_byte* main_memory, nes_word offset, dnes_byte_addr d
 		nes_byte opcode = main_memory[PC];
 		instruction::nes_instruction_t instruction = instruction::nes_instructions[opcode];
 
-
+		//printf("Emulating instruction opcode = %02x\n", opcode);
+		printf("%04x [%02x]> %s %s\n", (nes_word) PC, opcode, instruction::nes_opcode_names[instruction.opcode], 
+			instruction::AM_names[instruction.addressing_mode]);
 		switch (instruction.opcode) {
 			case instruction::ADC:
 				{
@@ -237,35 +244,35 @@ dnes_word emulate_code (nes_byte* main_memory, nes_word offset, dnes_byte_addr d
 			case instruction::BCC:
 				if (!context.carry_flag)  {
 					nes_byte off = main_memory[PC+1];
-					PC += get_relative_offset(main_memory[PC+1]);
+					PC += get_relative_offset(off);
 					continue;
 				}
 				break;
 			case instruction::BCS:
 				if (context.carry_flag)  {
 					nes_byte off = main_memory[PC+1];
-					PC += get_relative_offset(main_memory[PC+1]);
+					PC += get_relative_offset(off);
 					continue;
 				}
 				break;	
 			case instruction::BEQ:
 				if (context.zero_flag)  {
 					nes_byte off = main_memory[PC+1];
-					PC += get_relative_offset(main_memory[PC+1]);
+					PC += get_relative_offset(off);
 					continue;
 				}
 				break;
 			case instruction::BNE:
 				if (!context.zero_flag)  {
 					nes_byte off = main_memory[PC+1];
-					PC += get_relative_offset(main_memory[PC+1]);
+					PC += get_relative_offset(off);
 					continue;
 				}
 				break;
 			case instruction::BPL:
 				if (!context.sign_flag)  {
 					nes_byte off = main_memory[PC+1];
-					PC += get_relative_offset(main_memory[PC+1]);
+					PC += get_relative_offset(off);
 					continue;
 				}
 				break;
@@ -292,6 +299,7 @@ dnes_word emulate_code (nes_byte* main_memory, nes_word offset, dnes_byte_addr d
 					// We will instead return this value at runtime and the emulator will trigger 
 					// another compile cycle
 					sync_regs_out(context);
+					runtime::runtime_printf("Returning from address %04x\\n", (nes_word) PC);
 					return addr;
 				}
 				break;
@@ -397,6 +405,7 @@ dnes_word emulate_code (nes_byte* main_memory, nes_word offset, dnes_byte_addr d
 				// Returning 0 indicates to the interpreter that we are done
 				// Sync the regs out in case the calling program wants to read the registers
 				sync_regs_out(context);
+				runtime::runtime_printf("Returning from address %04x\\n", (nes_word) PC);
 				return 0x0000u;
 			case instruction::INC:
 				{
@@ -431,6 +440,7 @@ dnes_word emulate_code (nes_byte* main_memory, nes_word offset, dnes_byte_addr d
 						// Before we jump we need to sync all the registers
 						sync_regs_out(context);
 						// Return the value to jump to
+						runtime::runtime_printf("Returning from address %04x\\n", (nes_word) PC);
 						return ret_addr;
 					}
 					continue;
@@ -551,6 +561,7 @@ dnes_word emulate_code (nes_byte* main_memory, nes_word offset, dnes_byte_addr d
 					context.sp = context.sp + 2;
 					dnes_word addr = (high << 8) | low;
 					sync_regs_out(context);
+					runtime::runtime_printf("Returning from address %04x\\n", (nes_word) PC);
 					return addr;	
 				}
 				break;
@@ -569,6 +580,7 @@ dnes_word emulate_code (nes_byte* main_memory, nes_word offset, dnes_byte_addr d
 					dnes_word addr = (high << 8) | low;
 					addr = addr + 1;
 					sync_regs_out(context);
+					runtime::runtime_printf("Returning from address %04x\\n", (nes_word) PC);
 					return addr;
 				}
 				break;
@@ -633,8 +645,8 @@ dnes_word emulate_code (nes_byte* main_memory, nes_word offset, dnes_byte_addr d
 				set_Z(context, context.acc);	
 				break;			
 			default:
-				std::cerr << "Invalid instruction opcode " << (unsigned int) opcode << std::endl;
-				assert(false);		
+				runtime::runtime_unreachable("Jumped to invalid instruction");
+				return 0;
 			
 		}
 
